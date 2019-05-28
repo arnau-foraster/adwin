@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import unittest
 
-from core import model
+from core import algorithm
 
 
 class GroundTests(unittest.TestCase):
     def setUp(self):
         self.window = [1, 2, 3, 4]
-        self.adwin = model.Adwin(1, len(self.window), self.window)
+        self.adwin = algorithm.Adwin(1, len(self.window), self.window)
 
     def test_init(self):
         self.assertIsNotNone(self.adwin)
@@ -20,4 +18,4 @@ class GroundTests(unittest.TestCase):
 
     def test_core_algorithm(self):
         self.window.pop(0)
-        self.adwin.apply_algorithm(self.window, 1, 0)
+        self.adwin.apply(self.window, 1, 0)

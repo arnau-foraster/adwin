@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
+"""Module that defines adwin algorithm."""
 import logging
 
 import numpy
 
 
-class Adwin(object):
+class Adwin:
     """Adaptative sliding window implementation."""
-
-    def __init__(self, d, size_w, w):
+    def __init__(self, d, size_w, window):
         self.confidence = d  # confidence parameter
         self.size_w = size_w
-        self.window = w
+        self.window = window
 
         logging.debug(
             'Init Adwin with data: %s | %s | %s',
@@ -21,13 +19,8 @@ class Adwin(object):
             self.window,
         )
 
-    def avg(self, w):
-        mean = numpy.mean(w)
-        logging.debug('Avg value: %s', mean)
-
-        return mean
-
     def e_cut(self, size_w0, size_w1):
+        """Calculate e cut."""
         # m = 1/(1/n 0 + 1/n 1 ) i δ 0 = δ/n
         m = 1 / ((1 / float(size_w0)) + (1 / float(size_w1)))
         # delta
@@ -36,7 +29,8 @@ class Adwin(object):
         logging.debug('e: %s', e)
         return e
 
-    def apply_algorithm(self, w_list, x_t, m):
+    def apply(self, w_list, x_t, m):
+        """Apply algorithm."""
         self.window.append(x_t)
         lenght_w_list = len(w_list)
 
@@ -50,8 +44,8 @@ class Adwin(object):
                 w0_slice = self.window[:i]
                 w1_slice = self.window[i:]
 
-                mean_slice0 = self.avg(w0_slice)
-                mean_slice1 = self.avg(w1_slice)
+                mean_slice0 = numpy.mean(w0_slice)
+                mean_slice1 = numpy.mean(w1_slice)
                 means_diff = numpy.absolute(mean_slice0 - mean_slice1)
 
                 if means_diff > self.e_cut(len(w0_slice), len(w1_slice)):
@@ -59,4 +53,4 @@ class Adwin(object):
                     logging.debug('Update window with slice: %s', w1_slice)
                     self.window = w1_slice
 
-            return self.avg(self.window)
+            return numpy.mean(self.window)
